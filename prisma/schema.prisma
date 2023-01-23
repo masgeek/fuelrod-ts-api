@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model campaign_outbox {
+  id                  BigInt    @id @default(autoincrement())
+  user_id             BigInt?
+  campaign_id         BigInt?
+  message_hash        String?   @db.VarChar(150)
+  date_time           String?   @db.VarChar(100)
+  message_id          String?   @db.VarChar(255)
+  sender_id           String?   @db.VarChar(15)
+  currency            String?   @db.VarChar(4)
+  currency_rate       Decimal?  @default(0.00) @db.Decimal(10, 2)
+  phone_number        String?   @db.VarChar(150)
+  sms_text            String?   @db.Text
+  network_code        BigInt?   @default(0)
+  character_count     Int?
+  sms_count           Int?
+  retry_count         Int?      @default(0)
+  single_sms_cost     Decimal?  @db.Decimal(10, 2)
+  message_string_cost String?   @db.VarChar(25)
+  message_cost        Decimal?  @db.Decimal(10, 2)
+  actual_cost         Decimal?  @db.Decimal(10, 2)
+  delivery_status     String?   @db.VarChar(100)
+  message_delivered   Boolean?  @default(dbgenerated("(b'0')")) @db.Bit(1)
+  failure_reason      String?   @db.VarChar(100)
+  created_at          DateTime? @default(now()) @db.DateTime(0)
+  updated_at          DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([network_code], map: "fk_network_code")
+  @@index([actual_cost], map: "idx-actual-cost")
+  @@index([created_at], map: "idx-created-at")
+  @@index([currency], map: "idx-currency")
+  @@index([delivery_status], map: "idx-delivery-status")
+  @@index([message_id], map: "idx-message-id")
+  @@index([message_hash], map: "idx-sms-outbox-hash")
+  @@index([user_id], map: "idx-sms-outbox-user-id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model fuelrod_migration {
+  ID            String   @db.VarChar(255)
+  AUTHOR        String   @db.VarChar(255)
+  FILENAME      String   @db.VarChar(255)
+  DATEEXECUTED  DateTime @db.DateTime(0)
+  ORDEREXECUTED Int
+  EXECTYPE      String   @db.VarChar(10)
+  MD5SUM        String?  @db.VarChar(35)
+  DESCRIPTION   String?  @db.VarChar(255)
+  COMMENTS      String?  @db.VarChar(255)
+  TAG           String?  @db.VarChar(255)
+  LIQUIBASE     String?  @db.VarChar(20)
+  CONTEXTS      String?  @db.VarChar(255)
+  LABELS        String?  @db.VarChar(255)
+  DEPLOYMENT_ID String?  @db.VarChar(10)
+
+  @@ignore
+}
+
+model fuelrod_migration_lock {
+  ID          Int       @id
+  LOCKED      Boolean   @db.Bit(1)
+  LOCKGRANTED DateTime? @db.DateTime(0)
+  LOCKEDBY    String?   @db.VarChar(255)
+}
+
+model incoming_message {
+  id           BigInt    @id @default(autoincrement())
+  message_id   String    @db.VarChar(200)
+  link_id      String    @db.VarChar(200)
+  message      String    @db.Text
+  short_code   String    @db.VarChar(50)
+  date_sent    String?   @db.VarChar(30)
+  phone_number String    @db.VarChar(30)
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model message_queue {
+  id             BigInt       @id @default(autoincrement())
+  campaign_id    BigInt
+  message_hash   String?      @db.VarChar(150)
+  message_status String?      @db.VarChar(100)
+  message        String       @db.Text
+  message_length Int          @default(160)
+  phone_number   String?      @db.VarChar(150)
+  number_valid   Boolean?     @default(dbgenerated("(b'0')")) @db.Bit(1)
+  sms_count      Int?
+  message_cost   Decimal?     @db.Decimal(10, 2)
+  message_sent   Boolean?     @default(dbgenerated("(b'0')")) @db.Bit(1)
+  created_at     DateTime?    @default(now()) @db.DateTime(0)
+  updated_at     DateTime?    @default(now()) @db.DateTime(0)
+  sms_campaign   sms_campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade, map: "fk-campaign-id")
+
+  @@index([campaign_id], map: "fk-campaign-id")
+  @@index([message_hash], map: "idx-message-queue-hash")
+  @@index([phone_number], map: "idx-phone-number")
+}
+
+model mobile_network {
+  id           BigInt       @id @default(autoincrement())
+  country      String?      @db.VarChar(150)
+  country_code String?      @db.VarChar(5)
+  mcc_code     Int?
+  mcc_ref      BigInt?      @unique(map: "mcc_ref")
+  mnc_code     Int?
+  network_name String?      @db.VarChar(200)
+  mobile_code  Int?
+  created_at   DateTime?    @default(now()) @db.DateTime(0)
+  updated_at   DateTime?    @default(now()) @db.DateTime(0)
+  sms_outbox   sms_outbox[]
+}
+
+model number_blacklist {
+  id           BigInt    @id @default(autoincrement())
+  phone_number String?   @db.VarChar(150)
+  sender_id    String?   @db.VarChar(15)
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model opt_out {
+  id           BigInt    @id @default(autoincrement())
+  sender_id    String?   @db.VarChar(15)
+  phone_number String?   @db.VarChar(25)
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model remote_config {
+  id           BigInt    @id @default(autoincrement())
+  app_name     String    @db.VarChar(50)
+  config_name  String    @db.VarChar(50)
+  config_value String    @db.Text
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+
+  @@unique([app_name, config_name], map: "config-name-uk")
+}
+
+model sms_campaign {
+  id              BigInt          @id @default(autoincrement())
+  user_uuid       String          @db.VarChar(64)
+  campaign_name   String          @db.VarChar(255)
+  campaign_status String?         @db.VarChar(100)
+  is_draft        Boolean?        @default(dbgenerated("(b'1')")) @db.Bit(1)
+  created_at      DateTime?       @default(now()) @db.DateTime(0)
+  updated_at      DateTime?       @default(now()) @db.DateTime(0)
+  message_queue   message_queue[]
+  users           users           @relation(fields: [user_uuid], references: [uuid], map: "user-campaign-uid-fk")
+
+  @@index([campaign_status], map: "idx-campaign-status")
+  @@index([user_uuid], map: "user-campaign-uid-fk")
+}
+
+model sms_outbox {
+  id                  BigInt          @id @default(autoincrement())
+  user_id             BigInt?
+  campaign_id         BigInt?
+  message_hash        String?         @db.VarChar(150)
+  date_time           String?         @db.VarChar(100)
+  message_id          String?         @db.VarChar(255)
+  sender_id           String?         @db.VarChar(15)
+  currency            String?         @db.VarChar(4)
+  currency_rate       Decimal?        @default(0.00) @db.Decimal(10, 2)
+  phone_number        String?         @db.VarChar(150)
+  sms_text            String?         @db.Text
+  network_code        BigInt?         @default(0)
+  character_count     Int?
+  sms_count           Int?
+  retry_count         Int?            @default(0)
+  single_sms_cost     Decimal?        @db.Decimal(10, 2)
+  message_string_cost String?         @db.VarChar(25)
+  message_cost        Decimal?        @db.Decimal(10, 2)
+  actual_cost         Decimal?        @db.Decimal(10, 2)
+  delivery_status     String?         @db.VarChar(100)
+  message_delivered   Boolean?        @default(dbgenerated("(b'0')")) @db.Bit(1)
+  failure_reason      String?         @db.VarChar(100)
+  created_at          DateTime?       @default(now()) @db.DateTime(0)
+  updated_at          DateTime?       @default(now()) @db.DateTime(0)
+  mobile_network      mobile_network? @relation(fields: [network_code], references: [mcc_ref], onDelete: Restrict, map: "fk_network_code")
+
+  @@index([network_code], map: "fk_network_code")
+  @@index([actual_cost], map: "idx-actual-cost")
+  @@index([created_at], map: "idx-created-at")
+  @@index([currency], map: "idx-currency")
+  @@index([delivery_status], map: "idx-delivery-status")
+  @@index([message_id], map: "idx-message-id")
+  @@index([message_hash], map: "idx-sms-outbox-hash")
+  @@index([user_id], map: "idx-sms-outbox-user-id")
+}
+
+model sms_stats {
+  id            BigInt    @id @default(autoincrement())
+  user_id       BigInt
+  user_uuid     String?   @db.VarChar(64)
+  message_cost  Decimal   @db.Decimal(10, 2)
+  message_count BigInt
+  message_date  DateTime? @db.Date
+  users         users     @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk-sms-stats-user-id")
+
+  @@index([user_id], map: "fk-sms-stats-user-id")
+  @@index([message_date], map: "idx-message-date")
+}
+
+model untracked_callback {
+  id             BigInt    @id @default(autoincrement())
+  message_id     String    @db.VarChar(250)
+  network_code   String?   @db.VarChar(50)
+  phone_number   String?   @db.VarChar(100)
+  message_status String?   @db.VarChar(100)
+  retry_count    Int?
+  failure_reason String?   @db.VarChar(100)
+  created_at     DateTime? @default(now()) @db.DateTime(0)
+  updated_at     DateTime? @default(now()) @db.DateTime(0)
+}
+
+model user_api_config {
+  id           BigInt    @id @default(autoincrement())
+  user_uuid    String    @db.VarChar(64)
+  msg_service  String    @db.VarChar(20)
+  service_type String?   @default("BULK_SMS") @db.VarChar(10)
+  sender_id    String?   @db.VarChar(11)
+  active       Boolean?  @default(dbgenerated("(b'0')")) @db.Bit(1)
+  created_at   DateTime? @default(now()) @db.DateTime(0)
+  updated_at   DateTime? @default(now()) @db.DateTime(0)
+  users        users     @relation(fields: [user_uuid], references: [uuid], map: "user_uid_fk")
+
+  @@unique([id, sender_id], map: "unique_user_sender_id")
+  @@unique([id, msg_service], map: "unique_user_service")
+  @@index([user_uuid], map: "user_uid_fk")
+}
+
+model user_sms_credit {
+  id            BigInt    @id @default(autoincrement())
+  user_uuid     String    @db.VarChar(64)
+  credit_amount Decimal   @db.Decimal(10, 2)
+  remarks       String    @db.VarChar(150)
+  created_at    DateTime? @default(now()) @db.DateTime(0)
+  updated_at    DateTime? @default(now()) @db.DateTime(0)
+  users         users     @relation(fields: [user_uuid], references: [uuid], map: "user-credit-uid-fk")
+
+  @@index([credit_amount], map: "idx-credit-amount")
+  @@index([user_uuid], map: "user-credit-uid-fk")
+}
+
+model user_tokens {
+  id          String    @id @unique(map: "id") @db.VarChar(64)
+  user_name   String?   @db.VarChar(18)
+  token       String?   @unique(map: "unique_jwt_token") @db.VarChar(200)
+  expiry_date DateTime? @db.DateTime(0)
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
+  users       users?    @relation(fields: [user_name], references: [username], onDelete: Cascade, onUpdate: Restrict, map: "jwt_token_username")
+
+  @@index([user_name], map: "jwt_token_username")
+}
+
+model users {
+  id              BigInt            @id @default(autoincrement())
+  uuid            String            @unique(map: "user_uuid_uk") @db.VarChar(64)
+  username        String?           @unique(map: "user_name") @db.VarChar(18)
+  user_role       String            @default("USER") @db.VarChar(8)
+  client_name     String?           @db.VarChar(200)
+  user_email      String?           @db.VarChar(50)
+  password        String?           @db.VarChar(200)
+  message_cost    Decimal?          @default(1.50) @db.Decimal(10, 2)
+  overdraft       Boolean?          @db.Bit(1)
+  enabled         Boolean?          @db.Bit(1)
+  flag_reason     String            @default("ACTIVE") @db.VarChar(50)
+  created_at      DateTime?         @default(now()) @db.DateTime(0)
+  updated_at      DateTime?         @default(now()) @db.DateTime(0)
+  sms_campaign    sms_campaign[]
+  sms_stats       sms_stats[]
+  user_api_config user_api_config[]
+  user_sms_credit user_sms_credit[]
+  user_tokens     user_tokens[]
+}
