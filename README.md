@@ -1,4 +1,4 @@
-# Awesome Project Build with PrisMA and ExpressJS
+# Awesome Project Build with Prisma and ExpressJS
 
 Steps to run this project:
 
