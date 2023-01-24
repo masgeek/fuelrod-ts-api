@@ -1,4 +1,4 @@
-# Awesome Project Build with TypeORM
+# Awesome Project Build with PrisMA and ExpressJS
 
 Steps to run this project:
 
