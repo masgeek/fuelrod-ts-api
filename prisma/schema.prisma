@@ -8,9 +8,9 @@ datasource db {
 }
 
 model campaign_outbox {
-  id                  BigInt    @id @default(autoincrement())
-  user_id             BigInt?
-  campaign_id         BigInt?
+  id                  Int       @id
+  user_id             Int?
+  campaign_id         Int?
   message_hash        String?   @db.VarChar(150)
   date_time           String?   @db.VarChar(100)
   message_id          String?   @db.VarChar(255)
@@ -19,7 +19,7 @@ model campaign_outbox {
   currency_rate       Decimal?  @default(0.00) @db.Decimal(10, 2)
   phone_number        String?   @db.VarChar(150)
   sms_text            String?   @db.Text
-  network_code        BigInt?   @default(0)
+  network_code        Int?
   character_count     Int?
   sms_count           Int?
   retry_count         Int?      @default(0)
@@ -43,6 +43,8 @@ model campaign_outbox {
   @@index([user_id], map: "idx-sms-outbox-user-id")
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model fuelrod_migration {
   ID            String   @db.VarChar(255)
@@ -71,7 +73,7 @@ model fuelrod_migration_lock {
 }
 
 model incoming_message {
-  id           BigInt    @id @default(autoincrement())
+  id           Int       @id
   message_id   String    @db.VarChar(200)
   link_id      String    @db.VarChar(200)
   message      String    @db.Text
@@ -83,8 +85,8 @@ model incoming_message {
 }
 
 model message_queue {
-  id             BigInt       @id @default(autoincrement())
-  campaign_id    BigInt
+  id             Int          @id
+  campaign_id    Int
   message_hash   String?      @db.VarChar(150)
   message_status String?      @db.VarChar(100)
   message        String       @db.Text
@@ -104,11 +106,11 @@ model message_queue {
 }
 
 model mobile_network {
-  id           BigInt       @id @default(autoincrement())
+  id           Int          @id
   country      String?      @db.VarChar(150)
   country_code String?      @db.VarChar(5)
   mcc_code     Int?
-  mcc_ref      BigInt?      @unique(map: "mcc_ref")
+  mcc_ref      Int?         @unique(map: "mcc_ref")
   mnc_code     Int?
   network_name String?      @db.VarChar(200)
   mobile_code  Int?
@@ -118,7 +120,7 @@ model mobile_network {
 }
 
 model number_blacklist {
-  id           BigInt    @id @default(autoincrement())
+  id           Int       @id
   phone_number String?   @db.VarChar(150)
   sender_id    String?   @db.VarChar(15)
   created_at   DateTime? @default(now()) @db.DateTime(0)
@@ -126,7 +128,7 @@ model number_blacklist {
 }
 
 model opt_out {
-  id           BigInt    @id @default(autoincrement())
+  id           Int       @id
   sender_id    String?   @db.VarChar(15)
   phone_number String?   @db.VarChar(25)
   created_at   DateTime? @default(now()) @db.DateTime(0)
@@ -134,7 +136,7 @@ model opt_out {
 }
 
 model remote_config {
-  id           BigInt    @id @default(autoincrement())
+  id           Int       @id
   app_name     String    @db.VarChar(50)
   config_name  String    @db.VarChar(50)
   config_value String    @db.Text
@@ -145,7 +147,7 @@ model remote_config {
 }
 
 model sms_campaign {
-  id              BigInt          @id @default(autoincrement())
+  id              Int             @id
   user_uuid       String          @db.VarChar(64)
   campaign_name   String          @db.VarChar(255)
   campaign_status String?         @db.VarChar(100)
@@ -160,9 +162,9 @@ model sms_campaign {
 }
 
 model sms_outbox {
-  id                  BigInt          @id @default(autoincrement())
-  user_id             BigInt?
-  campaign_id         BigInt?
+  id                  Int             @id
+  user_id             Int?
+  campaign_id         Int?
   message_hash        String?         @db.VarChar(150)
   date_time           String?         @db.VarChar(100)
   message_id          String?         @db.VarChar(255)
@@ -171,7 +173,7 @@ model sms_outbox {
   currency_rate       Decimal?        @default(0.00) @db.Decimal(10, 2)
   phone_number        String?         @db.VarChar(150)
   sms_text            String?         @db.Text
-  network_code        BigInt?         @default(0)
+  network_code        Int?
   character_count     Int?
   sms_count           Int?
   retry_count         Int?            @default(0)
@@ -197,11 +199,11 @@ model sms_outbox {
 }
 
 model sms_stats {
-  id            BigInt    @id @default(autoincrement())
-  user_id       BigInt
+  id            Int       @id
+  user_id       Int
   user_uuid     String?   @db.VarChar(64)
   message_cost  Decimal   @db.Decimal(10, 2)
-  message_count BigInt
+  message_count Int
   message_date  DateTime? @db.Date
   users         users     @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk-sms-stats-user-id")
 
@@ -210,7 +212,7 @@ model sms_stats {
 }
 
 model untracked_callback {
-  id             BigInt    @id @default(autoincrement())
+  id             Int       @id
   message_id     String    @db.VarChar(250)
   network_code   String?   @db.VarChar(50)
   phone_number   String?   @db.VarChar(100)
@@ -222,7 +224,7 @@ model untracked_callback {
 }
 
 model user_api_config {
-  id           BigInt    @id @default(autoincrement())
+  id           Int       @id
   user_uuid    String    @db.VarChar(64)
   msg_service  String    @db.VarChar(20)
   service_type String?   @default("BULK_SMS") @db.VarChar(10)
@@ -238,7 +240,7 @@ model user_api_config {
 }
 
 model user_sms_credit {
-  id            BigInt    @id @default(autoincrement())
+  id            Int       @id
   user_uuid     String    @db.VarChar(64)
   credit_amount Decimal   @db.Decimal(10, 2)
   remarks       String    @db.VarChar(150)
@@ -263,7 +265,7 @@ model user_tokens {
 }
 
 model users {
-  id              BigInt            @id @default(autoincrement())
+  id              Int               @id
   uuid            String            @unique(map: "user_uuid_uk") @db.VarChar(64)
   username        String?           @unique(map: "user_name") @db.VarChar(18)
   user_role       String            @default("USER") @db.VarChar(8)

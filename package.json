@@ -9,23 +9,25 @@
   "dependencies": {
     "@prisma/client": "^4.9.0",
     "body-parser": "^1.19.1",
-    "express": "^4.18.2",
-    "mongoose": "^6.8.4"
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.15",
-    "@types/mongoose": "^5.11.97",
     "@types/node": "^18.11.18",
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.20",
     "prisma": "^4.9.0",
     "ts-node": "10.7.0",
+    "ts-node-dev": "^2.0.0",
     "typescript": "4.5.2"
   },
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
-    "dev": "concurrently \"tsc -w\" \"nodemon dist/js/app.js\""
+    "dev": "ts-node-dev src/index.ts"
+  },
+  "prisma-old": {
+    "schema": "prisma/fuelrod.prisma"
   }
 }

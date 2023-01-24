@@ -13,14 +13,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "forceConsistentCasingInFileNames": true,
-    "include": [
-      "src/**/*"
-    ],
-    "exclude": [
-      "src/types/*.ts",
-      "node_modules",
-      ".vscode"
-    ]
+    "forceConsistentCasingInFileNames": true
   }
 }
