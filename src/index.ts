@@ -9,7 +9,7 @@ const app = express();
 
 app.use('/api/v1/users', userRoute);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ?? 3000;
 
 const server = app.listen(PORT, () => {
 	console.log(`
