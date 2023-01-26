@@ -17,6 +17,14 @@ export class User extends BaseModel {
         super();
     }
 
+    async loadSingle(id: number): Promise<users> {
+        return this.prismaUser.findFirstOrThrow({
+            where: {
+                id: id
+            }
+        })
+    }
+
     async loadAll(): Promise<Array<users>> {
         return this.prismaUser.findMany();
     }
