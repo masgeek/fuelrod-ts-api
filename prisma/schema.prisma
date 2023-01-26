@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["clientExtensions"]
 }
 
 datasource db {
@@ -8,7 +9,7 @@ datasource db {
 }
 
 model campaign_outbox {
-  id                  Int       @id
+  id                  Int       @id @default(autoincrement())
   user_id             Int?
   campaign_id         Int?
   message_hash        String?   @db.VarChar(150)
@@ -46,6 +47,10 @@ model campaign_outbox {
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model fuelrod_migration {
   ID            String   @db.VarChar(255)
   AUTHOR        String   @db.VarChar(255)
@@ -73,7 +78,7 @@ model fuelrod_migration_lock {
 }
 
 model incoming_message {
-  id           Int       @id
+  id           Int       @id @default(autoincrement())
   message_id   String    @db.VarChar(200)
   link_id      String    @db.VarChar(200)
   message      String    @db.Text
@@ -85,7 +90,7 @@ model incoming_message {
 }
 
 model message_queue {
-  id             Int          @id
+  id             Int          @id @default(autoincrement())
   campaign_id    Int
   message_hash   String?      @db.VarChar(150)
   message_status String?      @db.VarChar(100)
@@ -106,7 +111,7 @@ model message_queue {
 }
 
 model mobile_network {
-  id           Int          @id
+  id           Int          @id @default(autoincrement())
   country      String?      @db.VarChar(150)
   country_code String?      @db.VarChar(5)
   mcc_code     Int?
@@ -120,7 +125,7 @@ model mobile_network {
 }
 
 model number_blacklist {
-  id           Int       @id
+  id           Int       @id @default(autoincrement())
   phone_number String?   @db.VarChar(150)
   sender_id    String?   @db.VarChar(15)
   created_at   DateTime? @default(now()) @db.DateTime(0)
@@ -128,7 +133,7 @@ model number_blacklist {
 }
 
 model opt_out {
-  id           Int       @id
+  id           Int       @id @default(autoincrement())
   sender_id    String?   @db.VarChar(15)
   phone_number String?   @db.VarChar(25)
   created_at   DateTime? @default(now()) @db.DateTime(0)
@@ -136,7 +141,7 @@ model opt_out {
 }
 
 model remote_config {
-  id           Int       @id
+  id           Int       @id @default(autoincrement())
   app_name     String    @db.VarChar(50)
   config_name  String    @db.VarChar(50)
   config_value String    @db.Text
@@ -147,7 +152,7 @@ model remote_config {
 }
 
 model sms_campaign {
-  id              Int             @id
+  id              Int             @id @default(autoincrement())
   user_uuid       String          @db.VarChar(64)
   campaign_name   String          @db.VarChar(255)
   campaign_status String?         @db.VarChar(100)
@@ -162,7 +167,7 @@ model sms_campaign {
 }
 
 model sms_outbox {
-  id                  Int             @id
+  id                  Int             @id @default(autoincrement())
   user_id             Int?
   campaign_id         Int?
   message_hash        String?         @db.VarChar(150)
@@ -199,7 +204,7 @@ model sms_outbox {
 }
 
 model sms_stats {
-  id            Int       @id
+  id            Int       @id @default(autoincrement())
   user_id       Int
   user_uuid     String?   @db.VarChar(64)
   message_cost  Decimal   @db.Decimal(10, 2)
@@ -212,7 +217,7 @@ model sms_stats {
 }
 
 model untracked_callback {
-  id             Int       @id
+  id             Int       @id @default(autoincrement())
   message_id     String    @db.VarChar(250)
   network_code   String?   @db.VarChar(50)
   phone_number   String?   @db.VarChar(100)
@@ -224,7 +229,7 @@ model untracked_callback {
 }
 
 model user_api_config {
-  id           Int       @id
+  id           Int       @id @default(autoincrement())
   user_uuid    String    @db.VarChar(64)
   msg_service  String    @db.VarChar(20)
   service_type String?   @default("BULK_SMS") @db.VarChar(10)
@@ -240,7 +245,7 @@ model user_api_config {
 }
 
 model user_sms_credit {
-  id            Int       @id
+  id            Int       @id @default(autoincrement())
   user_uuid     String    @db.VarChar(64)
   credit_amount Decimal   @db.Decimal(10, 2)
   remarks       String    @db.VarChar(150)
@@ -265,7 +270,7 @@ model user_tokens {
 }
 
 model users {
-  id              Int               @id
+  id              Int               @id @default(autoincrement())
   uuid            String            @unique(map: "user_uuid_uk") @db.VarChar(64)
   username        String?           @unique(map: "user_name") @db.VarChar(18)
   user_role       String            @default("USER") @db.VarChar(8)

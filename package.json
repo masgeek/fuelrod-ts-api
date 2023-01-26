@@ -9,7 +9,8 @@
   "dependencies": {
     "@prisma/client": "^4.9.0",
     "body-parser": "^1.19.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "sms-counter": "^1.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
@@ -25,7 +26,9 @@
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
-    "dev": "ts-node-dev src/index.ts"
+    "dev": "ts-node-dev src/index.ts",
+    "update-db": "prisma generate",
+    "view-db": "prisma studio"
   },
   "prisma-old": {
     "schema": "prisma/fuelrod.prisma"

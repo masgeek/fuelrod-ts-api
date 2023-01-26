@@ -943,6 +943,11 @@ simple-update-notifier@^1.0.7:
   dependencies:
     semver "~7.0.0"
 
+sms-counter@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/sms-counter/-/sms-counter-1.0.0.tgz#acfdbff1825b5a22b66bcbc1ade2077432d405c1"
+  integrity sha512-2mFXYuLyktYAT+sX+q/+SlW7hW/SQoxju6wKd4/QS2sRbNY7q8h3s8PZZMyuzYnsgMk54Dnb2NSdN4kfySb1Yw==
+
 source-map-support@^0.5.12:
   version "0.5.21"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.21.tgz#04fe7c7f9e1ed2d662233c28cb2b35b9f63f6e4f"

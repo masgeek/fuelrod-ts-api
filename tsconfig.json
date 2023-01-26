@@ -2,9 +2,9 @@
   "compilerOptions": {
     "lib": [
       "es5",
-      "es6"
+      "es6",
     ],
-    "target": "es6",
+    "target": "ES2018",
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
@@ -14,5 +14,10 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "exclude": [
+    "dist",
+    "prisma",
+    "tests"
+  ]
 }
